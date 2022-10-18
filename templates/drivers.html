@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<a class="btn btn-primary" href="{{url_for('drivers_desc')}}" role="button">Desc</a>
+<a class="btn btn-primary" href="{{url_for('drivers')}}" role="button">Asc</a>
+<a class="btn btn-primary" href="{{url_for('drivers', order='desc')}}" role="button">Desc</a>
 <table class="table">
   <thead>
     <tr>
@@ -10,20 +11,27 @@
     </tr>
   </thead>
   <tbody>
-  {% for racer in info_for_output %}
+  {% for racer in prepared_info_for_report %}
     <tr>
-      <th scope="row">{{racer[0]}}</th>
-      <td>{{ racer[1] }}</td>
-      <td><a href="{{url_for('driver', abbreviation=racer[1])}}">Details</a></td>
+      <th scope="row">{{ racer.place }}</th>
+      <td>{{ racer.name }}</td>
+      <td><a href="{{url_for('drivers', abbreviation=racer.abbreviation)}}">Details</a></td>
     </tr>
-  {% if racer[0] == 15 %}
+    {% if order == 'desc' and (racer.place == 1 or racer.place == 16) %}
     <tr>
       <th scope="row"></th>
       <td></td>
       <td></td>
       <td></td>
     </tr>
-  {% endif %}
+    {% elif order != 'desc' and racer.place == 15 %}
+    <tr>
+      <th scope="row"></th>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {% endif %}
   {% endfor %}
   </tbody>
 </table>
