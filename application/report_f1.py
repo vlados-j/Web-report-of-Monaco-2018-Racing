@@ -1,5 +1,5 @@
 from flask import redirect, url_for, render_template, request, Blueprint
-from application_vlados import *
+from application_vlados import processing_data, build_report
 
 
 report_f1 = Blueprint('report_f1', __name__, static_folder='static', template_folder='templates')
@@ -46,4 +46,3 @@ def info_for_output(structured_info, ordering):
         else:
             racer.place = '-'
     return prepared_info_for_report
-

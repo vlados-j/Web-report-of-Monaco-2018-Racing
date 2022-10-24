@@ -1,11 +1,10 @@
-import application_vlados
 from main import app
-from application import *
 import pytest
 from flask import url_for
-from application_vlados import *
+from application_vlados import Racer
 from datetime import datetime
-from unittest.mock import patch, Mock, mock_open
+from unittest.mock import patch
+from application.report_f1 import info_for_output
 
 
 @pytest.fixture()
@@ -27,13 +26,8 @@ def test_index_wrong_request(client):
     assert response.status_code == 405
 
 
-# def test_of_test():
-#     print(processing_data('../application/files/start.log', '../application/files/end.log',
-#                           '../application/files/abbreviations.txt'))
-
-#Вот в этой функции нужна помощь
 @pytest.mark.parametrize("path", ['/report/', '/report/?order=desc'])
-@patch('application_vlados.processing_data')
+@patch('application.report_f1.processing_data')
 def test_report(mock_processing_data, client, path):
     mock_processing_data.return_value = {'Sebastian Vettel':
                                              Racer('Sebastian Vettel', 'SVF', 'FERRARI',
@@ -42,12 +36,18 @@ def test_report(mock_processing_data, client, path):
                                          'Daniel Ricciardo':
                                              Racer('Daniel Ricciardo', 'DRR', 'RED BULL RACING TAG HEUER', None, None)}
     response = client.get(path)
-    print(response.status_code)
     assert response.status_code == 200
 
 
 @pytest.mark.parametrize("path", ['/report/drivers/', '/report/drivers/?abbreviation=SVF'])
-def test_drivers(client, path):
+@patch('application.report_f1.processing_data')
+def test_drivers(mock_processing_data, client, path):
+    mock_processing_data.return_value = {'Sebastian Vettel':
+                                             Racer('Sebastian Vettel', 'SVF', 'FERRARI',
+                                                   datetime(2018, 5, 24, 12, 2, 58, 917),
+                                                   datetime(2018, 5, 24, 12, 4, 3, 332)),
+                                         'Daniel Ricciardo':
+                                             Racer('Daniel Ricciardo', 'DRR', 'RED BULL RACING TAG HEUER', None, None)}
     response = client.get(path, content_type='html/text')
     assert response.status_code == 200, response.content
 
